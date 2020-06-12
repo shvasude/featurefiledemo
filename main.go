@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/shvasude/featurefiledemo/lib"
+
 	"gotest.tools/v3/icmd"
 )
 
 var (
 	git = "github.com"
 	//path = "*"
-	path = "specs/pipelines"
+	path = "feature"
 )
-
-//https://github.com/<<project>>/<<repo>>/tree/<<branch>>/<<path>>
 
 //Run function executes a command with timeout
 func run(cmd ...string) *icmd.Result {
@@ -25,10 +25,7 @@ func run(cmd ...string) *icmd.Result {
 }
 
 func getBranch() string {
-	//git rev-parse --abbrev-ref HEAD
-	branch := strings.TrimSpace(run("git", "rev-parse", "--abbrev-ref", "HEAD").Stdout())
-	//url := fmt.Sprintf("%s", branch)
-	return branch
+	return strings.TrimSpace(run("git", "rev-parse", "--abbrev-ref", "HEAD").Stdout())
 }
 
 func main() {
@@ -36,14 +33,15 @@ func main() {
 	res := strings.TrimSpace(run("pwd").Stdout())
 	lstArr := strings.Split(res, git)
 
-	url := fmt.Sprintf("https://%s/%s", git, lstArr[1])
-	fmt.Printf(url)
-	fmt.Printf(getBranch())
-	url1 := fmt.Sprintf("%s/tree/%s", url, getBranch())
-	url2 := fmt.Sprintf("%s/%s", url1, path)
-	fmt.Printf(url2)
-	//examplePath := fmt.Sprintf("%s/%s", getExamplesDir())
+	gitURL := fmt.Sprintf("http://%s/%s/tree/%s/%s", git, lstArr[1], getBranch(), path)
+	fmt.Printf("Git URL - %s", gitURL)
+	//lib.CreateIssue(gitURL)
+	lib.GetIssue("APPSVC-603")
+	lib.UpdateIssue("APPSVC-603", gitURL)
 
-	//appStatusEndpoint := fmt.Sprintf("http://%s/api/status/dbNameCM")
-	///checkNodeJSAppFrontend(appStatusEndpoint, dbName)
+	fmt.Printf("Execution Done")
+
+	//This is only performed if you have an admin rights to delete a jira issue in a jira project
+	//lib.DeleteIssue("APPSVC-603")
+
 }

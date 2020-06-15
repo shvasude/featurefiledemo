@@ -23,17 +23,17 @@ var (
 type Issue struct {
 	Fields struct {
 		Project struct {
-			Key string `json:"key"`
-		} `json:"project"`
-		Summary     string `json:"summary"`
-		Description string `json:"description"`
+			Key string `json:"key,omitempty"`
+		} `json:"project,omitempty"`
+		Summary     string `json:"summary,omitempty"`
+		Description string `json:"description,omitempty"`
 		Issuetype   struct {
-			Name string `json:"name"`
-		} `json:"issuetype"`
+			Name string `json:"name,omitempty"`
+		} `json:"issuetype,omitempty"`
 		Priority struct {
-			ID string `json:"id"`
-		} `json:"priority"`
-	} `json:"fields"`
+			ID string `json:"priority,omitempty"`
+		} `json:"priority,omitempty"`
+	} `json:"omitempty,omitempty"`
 }
 
 //Credentials a representation of a JIRA config which helds API permissions

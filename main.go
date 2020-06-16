@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/shvasude/featurefiledemo/lib"
+	lib "github.com/shvasude/featurefiledemo/lib"
 
 	"gotest.tools/v3/icmd"
 )
@@ -12,7 +12,7 @@ import (
 var (
 	git = "github.com"
 	//path = "*"
-	path = "feature"
+	path = "specs/pipelines"
 )
 
 //Run function executes a command with timeout
@@ -35,9 +35,31 @@ func main() {
 
 	gitURL := fmt.Sprintf("http://%s/%s/tree/%s/%s", git, lstArr[1], getBranch(), path)
 	fmt.Printf("Git URL - %s", gitURL)
-	//lib.CreateIssue(gitURL)
-	lib.GetIssue("APPSVC-603")
-	lib.UpdateIssue("APPSVC-603", gitURL)
+
+	issueData := lib.IssueStruct{}
+
+	updatedVal := "updated value"
+	issueData.Fields.Description = &updatedVal
+	lib.UpdateIssue("APPSVC-603", issueData)
+
+	summary := "Title"
+	key := "APPSVC"
+	issueType := "Task"
+
+	//issueData.Fields.Description = &gitURL
+	issueData.Fields.Summary = &summary
+	issueData.Fields.Project.Key = &key
+	issueData.Fields.IssueType.Name = &issueType
+
+	//lib.CreateIssue(issueData)
+
+	//lib.GetIssue("APPSVC-603")
+
+	//issueData.Reset()
+
+	//updatedVal := "updated value"
+	issueData.Fields.Description = &updatedVal
+	lib.UpdateIssue("APPSVC-603", issueData)
 
 	fmt.Printf("Execution Done")
 

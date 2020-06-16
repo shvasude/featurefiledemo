@@ -15,25 +15,71 @@ import (
 var (
 	configFile  = "jira_config.toml"
 	parameter   string
-	issue       Issue
 	apiEndPoint = "/rest/api/2/issue/"
+	issue       IssueStruct
 )
 
-//Issue is a representation of a Jira Issue
-type Issue struct {
+/*
+//IssueStruct is a representation of a Jira Issue
+type IssueStruct struct {
 	Fields struct {
 		Project struct {
-			Key string `json:"key"`
-		} `json:"project"`
-		Summary     string `json:"summary"`
-		Description string `json:"description"`
+			Key *string `json:"key,omitempty"`
+		} `json:"project,omitempty"`
+		Summary     *string `json:"summary,omitempty"`
+		Description *string `json:",omitempty"`
 		Issuetype   struct {
-			Name string `json:"name"`
-		} `json:"issuetype"`
+			Name *string `json:"name,omitempty"`
+		} `json:"issuetype,omitempty"`
 		Priority struct {
-			ID string `json:"id"`
-		} `json:"priority"`
-	} `json:"fields"`
+			ID string `json:"id,omitempty"`
+		} `json:"priority,omitempty"`
+	} `json:"fields,omitempty"`
+}
+*/
+/*
+//IssueStruct is a representation of a Jira Issue
+type IssueStruct struct {
+	Fields struct {
+		Project struct {
+			Key *string `json:",omitempty"`
+		} `json:",omitempty"`
+		Summary     *string `json:",omitempty"`
+		Description *string `json:",omitempty"`
+		Issuetype   struct {
+			Name *string `json:",omitempty"`
+		} `json:",omitempty"`
+		Priority struct {
+			ID string `json:"id,omitempty"`
+		} `json:",omitempty"`
+	} `json:"fields,omitempty"`
+}
+*/
+
+//Project defines the project values
+type Project struct {
+	Key *string `json:",omitempty"`
+}
+
+//IssueType defines the issue type values
+type IssueType struct {
+	Name *string `json:",omitempty"`
+}
+
+//Priority defines the priority values
+type Priority struct {
+	ID *string `json:"id,omitempty"`
+}
+
+//IssueStruct is a representation of a Jira Issue
+type IssueStruct struct {
+	Fields struct {
+		*Project
+		Summary     *string `json:",omitempty"`
+		Description *string `json:"description,omitempty"`
+		*IssueType
+		*Priority
+	} `json:"fields,omitempty"`
 }
 
 //Credentials a representation of a JIRA config which helds API permissions
@@ -54,14 +100,9 @@ func (cred *Credentials) initConfig() {
 }
 
 //CreateIssue creates a new issue
-func CreateIssue(gitURL string) {
+func CreateIssue(issueData IssueStruct) {
 	fmt.Println("Creating new issue.")
-	issue.Fields.Summary = "Title"
-	issue.Fields.Project.Key = "APPSVC"
-	issue.Fields.Issuetype.Name = "Task"
-	issue.Fields.Description = gitURL
-	issue.Fields.Priority.ID = "4"
-	marshalledIssue, err := json.Marshal(issue)
+	marshalledIssue, err := json.Marshal(issueData)
 	if err != nil {
 		log.Fatal("Error occured when Marshaling Issue:", err)
 	}
@@ -74,11 +115,10 @@ From post man, gives gives 400 error that says 'could not find issuetype by id o
 */
 
 //UpdateIssue update an existing issue; PUT /rest/api/2/issue/{issueIdOrKey}
-func UpdateIssue(issueID string, gitURL string) {
+func UpdateIssue(issueID string, issueData IssueStruct) {
 	fmt.Println("Updating existing issue.")
 	apiURL := fmt.Sprintf("%s%s", apiEndPoint, issueID)
-	issue.Fields.Description = gitURL
-	marshalledIssue, err := json.Marshal(issue)
+	marshalledIssue, err := json.Marshal(issueData)
 	if err != nil {
 		log.Fatal("Error occured when Marshaling Issue:", err)
 	}
@@ -117,4 +157,11 @@ func sendRequest(jsonStr []byte, method string, url string) {
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 
+}
+
+var zeroA = &IssueStruct{}
+
+//Reset the existing values of the struct
+func (a *IssueStruct) Reset() {
+	*a = *zeroA
 }

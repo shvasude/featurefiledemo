@@ -5,13 +5,11 @@ import (
 	"strings"
 
 	lib "github.com/shvasude/featurefiledemo/lib"
-
 	"gotest.tools/v3/icmd"
 )
 
 var (
-	git = "github.com"
-	//path = "*"
+	git  = "github.com"
 	path = "specs/pipelines"
 )
 
@@ -37,33 +35,25 @@ func main() {
 	fmt.Printf("Git URL - %s", gitURL)
 
 	issueData := lib.IssueStruct{}
+	issueData.Fields.Description = &gitURL
+	lib.UpdateIssue("APPSVC-608", issueData)
 
-	updatedVal := "updated value"
-	issueData.Fields.Description = &updatedVal
-	lib.UpdateIssue("APPSVC-603", issueData)
-
-	summary := "Title"
+	summary := "NewTest Title"
 	key := "APPSVC"
+	Project := lib.Project{Key: &key}
 	issueType := "Task"
+	Issuetype := lib.IssueType{Name: &issueType}
+	priority := "10004"
+	Priority := lib.Priority{ID: &priority}
 
-	//issueData.Fields.Description = &gitURL
+	issueData.Fields.Description = &gitURL
 	issueData.Fields.Summary = &summary
-	issueData.Fields.Project.Key = &key
-	issueData.Fields.IssueType.Name = &issueType
+	issueData.Fields.Project = &Project
+	issueData.Fields.IssueType = &Issuetype
+	issueData.Fields.Priority = &Priority
 
-	//lib.CreateIssue(issueData)
-
-	//lib.GetIssue("APPSVC-603")
-
-	//issueData.Reset()
-
-	//updatedVal := "updated value"
-	issueData.Fields.Description = &updatedVal
-	lib.UpdateIssue("APPSVC-603", issueData)
+	lib.CreateIssue(issueData)
 
 	fmt.Printf("Execution Done")
-
-	//This is only performed if you have an admin rights to delete a jira issue in a jira project
-	//lib.DeleteIssue("APPSVC-603")
 
 }

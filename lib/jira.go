@@ -19,51 +19,14 @@ var (
 	issue       IssueStruct
 )
 
-/*
-//IssueStruct is a representation of a Jira Issue
-type IssueStruct struct {
-	Fields struct {
-		Project struct {
-			Key *string `json:"key,omitempty"`
-		} `json:"project,omitempty"`
-		Summary     *string `json:"summary,omitempty"`
-		Description *string `json:",omitempty"`
-		Issuetype   struct {
-			Name *string `json:"name,omitempty"`
-		} `json:"issuetype,omitempty"`
-		Priority struct {
-			ID string `json:"id,omitempty"`
-		} `json:"priority,omitempty"`
-	} `json:"fields,omitempty"`
-}
-*/
-/*
-//IssueStruct is a representation of a Jira Issue
-type IssueStruct struct {
-	Fields struct {
-		Project struct {
-			Key *string `json:",omitempty"`
-		} `json:",omitempty"`
-		Summary     *string `json:",omitempty"`
-		Description *string `json:",omitempty"`
-		Issuetype   struct {
-			Name *string `json:",omitempty"`
-		} `json:",omitempty"`
-		Priority struct {
-			ID string `json:"id,omitempty"`
-		} `json:",omitempty"`
-	} `json:"fields,omitempty"`
-}
-*/
-
 //Project defines the project values
 type Project struct {
-	Key *string `json:",omitempty"`
+	Key *string `json:"key,omitempty"`
 }
 
 //IssueType defines the issue type values
 type IssueType struct {
-	Name *string `json:",omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 //Priority defines the priority values
@@ -74,11 +37,11 @@ type Priority struct {
 //IssueStruct is a representation of a Jira Issue
 type IssueStruct struct {
 	Fields struct {
-		*Project
-		Summary     *string `json:",omitempty"`
-		Description *string `json:"description,omitempty"`
-		*IssueType
-		*Priority
+		Project     *Project   `json:"project,omitempty"`
+		Summary     *string    `json:"summary,omitempty"`
+		Description *string    `json:"description,omitempty"`
+		IssueType   *IssueType `json:"issuetype,omitempty"`
+		Priority    *Priority  `json:"priority,omitempty"`
 	} `json:"fields,omitempty"`
 }
 
@@ -106,13 +69,8 @@ func CreateIssue(issueData IssueStruct) {
 	if err != nil {
 		log.Fatal("Error occured when Marshaling Issue:", err)
 	}
-	sendRequest(marshalledIssue, "POST", "")
+	sendRequest(marshalledIssue, "POST", apiEndPoint)
 }
-
-/*Need to ignore the unwanted struct for marshalling as
-From post man, gives 200 on {"fields":{"description":"https://github.com//shvasude/featurefiledemo/tree/master/feature"}}
-From post man, gives gives 400 error that says 'could not find issuetype by id or name
-*/
 
 //UpdateIssue update an existing issue; PUT /rest/api/2/issue/{issueIdOrKey}
 func UpdateIssue(issueID string, issueData IssueStruct) {
@@ -129,12 +87,6 @@ func UpdateIssue(issueID string, issueData IssueStruct) {
 func GetIssue(issueID string) {
 	apiURL := fmt.Sprintf("%s%s", apiEndPoint, issueID)
 	sendRequest(nil, "GET", apiURL)
-}
-
-//DeleteIssue deletes the issue in jira; DELETE /rest/api/2/issue/{issueIdOrKey}
-func DeleteIssue(issueID string) {
-	apiURL := fmt.Sprintf("%s%s", apiEndPoint, issueID)
-	sendRequest(nil, "DELETE", apiURL)
 }
 
 func sendRequest(jsonStr []byte, method string, url string) {
@@ -157,11 +109,4 @@ func sendRequest(jsonStr []byte, method string, url string) {
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 
-}
-
-var zeroA = &IssueStruct{}
-
-//Reset the existing values of the struct
-func (a *IssueStruct) Reset() {
-	*a = *zeroA
 }

@@ -52,8 +52,8 @@ func main() {
 	issueData.Fields.IssueType = &Issuetype
 	issueData.Fields.Priority = &Priority
 
-	lib.CreateIssue(issueData)
-
+	// lib.CreateIssue(issueData)
+	lib.GetIssue("APPSVC-270")
 	fmt.Printf("Execution Done")
 
 }
